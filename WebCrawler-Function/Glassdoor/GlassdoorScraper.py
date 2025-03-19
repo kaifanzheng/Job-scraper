@@ -2,6 +2,9 @@ import time
 import json
 import random
 import pytesseract
+import pyautogui
+import cv2
+import numpy as np
 from PIL import Image
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -63,12 +66,15 @@ class GlassdoorScraper:
                 job.click()
                 time.sleep(random.uniform(3, 6))  # Allow details to load
 
-                # Ensure "Show More" is clicked inside job details
-                self.click_show_more()
+                # Take a screenshot after clicking
+                screenshot_path = self.capture_screenshot(index)
 
-                # Extract job details visually via OCR from the full page screenshot
-                job_text = self.extract_text_from_screenshot()
-                
+                # Detect and click "Show More" button
+                self.detect_and_click_show_more(screenshot_path)
+
+                # Scroll & Capture Full Job Details using Mouse Scroll
+                job_text = self.extract_full_job_details(index)
+
                 print(f"\n📌 Job {index + 1} Details:\n{job_text}\n")
 
                 self.jobs_data.append({
@@ -78,36 +84,102 @@ class GlassdoorScraper:
             except Exception as e:
                 print(f"⚠️ Error interacting with job: {e}")
 
-    def click_show_more(self):
-        """Click the 'Show More' button if present to load full job description."""
-        try:
-            show_more_button = WebDriverWait(self.driver, 3).until(
-                EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'Show more')]"))
-            )
-            self.scroll_into_view(show_more_button)
-            time.sleep(random.uniform(1, 2))
-            show_more_button.click()
-            print("✅ Clicked 'Show More' in job description.")
-            time.sleep(random.uniform(2, 4))
-        except:
-            pass  # No "Show More" button found
+    def capture_screenshot(self, job_index):
+        """Capture a screenshot of the job details panel."""
+        screenshot_path = f"job_details_{job_index}.png"
+        self.driver.save_screenshot(screenshot_path)
+        time.sleep(2)
+        return screenshot_path
 
-    def extract_text_from_screenshot(self):
-        """Capture a screenshot of the full page and extract text using OCR."""
+    def detect_and_click_show_more(self, screenshot_path):
+        """Detect and click 'Show More' button using OCR and PyAutoGUI."""
         try:
-            screenshot_path = "full_page_screenshot.png"
+            # Load the image
+            image = cv2.imread(screenshot_path)
+
+            if image is None:
+                print("⚠️ Error: Unable to load the screenshot.")
+                return
+
+            # Get image dimensions
+            height, width, _ = image.shape
+
+            # Focus only on the **bottom half** where the "Show More" button is likely located
+            bottom_half = image[height // 2 :, :]
+
+            # Convert to grayscale
+            gray = cv2.cvtColor(bottom_half, cv2.COLOR_BGR2GRAY)
+
+            # Apply OCR to detect text
+            extracted_text = pytesseract.image_to_data(gray, output_type=pytesseract.Output.DICT)
+
+            # Find occurrences of "Show More"
+            for i, text in enumerate(extracted_text["text"]):
+                if "Show" in text or "More" in text:  # Allow slight OCR tolerance
+                    x, y, w, h = (
+                        extracted_text["left"][i],
+                        extracted_text["top"][i] + height // 2,  # Adjust Y coordinate to full image
+                        extracted_text["width"][i],
+                        extracted_text["height"][i],
+                    )
+
+                    # Convert image coordinates to screen coordinates
+                    screen_width, screen_height = pyautogui.size()
+                    screen_x = int(x * (screen_width / width))
+                    screen_y = int(y * (screen_height / height)) + 10  # Move cursor **10 pixels down**
+
+                    print(f"✅ 'Show More' button detected at ({screen_x}, {screen_y}). Clicking...")
+
+                    # Move the mouse and click
+                    pyautogui.moveTo(screen_x, screen_y, duration=random.uniform(0.5, 1.5))
+                    pyautogui.click()
+
+                    time.sleep(random.uniform(2, 4))
+
+                    return  # Exit after first detection
+
+            print("⚠️ 'Show More' button not detected.")
+
+        except Exception as e:
+            print(f"⚠️ Error detecting 'Show More' button: {e}")
+
+    def extract_full_job_details(self, job_index):
+        """Scroll down inside the job details tab using mouse wheel and capture text until 'Show Less' is detected."""
+        full_text = []
+        screenshot_counter = 1
+
+        while True:
+            # Capture the current job panel
+            screenshot_path = f"screen_shot/job_details_{job_index}_{screenshot_counter}.png"
             self.driver.save_screenshot(screenshot_path)
             time.sleep(2)
 
-            # Use OCR to extract text from the image
+            # Extract text from screenshot
             image = Image.open(screenshot_path)
-            extracted_text = pytesseract.image_to_string(image)
+            extracted_text = pytesseract.image_to_string(image).strip()
 
-            return extracted_text.strip()
+            if extracted_text:
+                full_text.append(extracted_text)
 
-        except Exception as e:
-            print(f"⚠️ Error extracting job details via OCR: {e}")
-            return "Error extracting job details"
+            print(f"📸 Captured and processed screenshot {screenshot_counter} for job {job_index + 1}")
+            print(f"🔍 Extracted Text: {extracted_text}")
+            # Check if "Show Less" button is visible (stop scrolling)
+            if "Show Less" in extracted_text:
+                print("✅ 'Show Less' detected, all job details captured.")
+                break
+            if "Showless" in extracted_text:
+                print("✅ 'Showless' detected, all job details captured.")
+                break
+            if screenshot_counter >= 5:
+                print("🛑 Maximum screenshots reached. Stopping extraction.")
+                break
+            # **Use mouse scroll wheel to scroll down inside job details tab**
+            pyautogui.scroll(-5)  # Scroll down (negative value)
+            time.sleep(random.uniform(2, 4))
+
+            screenshot_counter += 1
+
+        return "\n".join(full_text)
 
     def scroll_into_view(self, element):
         """Scroll to an element smoothly."""
