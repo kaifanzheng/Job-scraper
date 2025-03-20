@@ -1,0 +1,80 @@
+2025-03-20 08:03:09,390 - INFO - ====== WebDriver manager ======
+2025-03-20 08:03:14,719 - INFO - Get LATEST chromedriver version for google-chrome
+2025-03-20 08:03:14,944 - INFO - Get LATEST chromedriver version for google-chrome
+2025-03-20 08:03:15,146 - INFO - Driver [/Users/kaifan/.wdm/drivers/chromedriver/mac64/134.0.6998.90/chromedriver-mac-arm64/chromedriver] found in cache
+2025-03-20 08:03:16,683 - INFO - ✅ WebDriver initialized successfully.
+2025-03-20 08:03:25,305 - INFO - ✅ Opened Glassdoor job page.
+2025-03-20 08:03:27,449 - INFO - ✅ Scrolled through job listings.
+2025-03-20 08:03:27,450 - INFO - 🔍 Scanning job listings...
+2025-03-20 08:03:27,467 - INFO - ✅ Found 30 jobs.
+2025-03-20 08:03:27,469 - ERROR - ⚠️ Error interacting with job 1: 'GlassdoorScraper' object has no attribute 'scroll_into_view'
+2025-03-20 08:03:27,470 - ERROR - ⚠️ Error interacting with job 2: 'GlassdoorScraper' object has no attribute 'scroll_into_view'
+2025-03-20 08:03:27,471 - ERROR - ⚠️ Error interacting with job 3: 'GlassdoorScraper' object has no attribute 'scroll_into_view'
+2025-03-20 08:03:27,472 - ERROR - ⚠️ Error interacting with job 4: 'GlassdoorScraper' object has no attribute 'scroll_into_view'
+2025-03-20 08:03:27,473 - ERROR - ⚠️ Error interacting with job 5: 'GlassdoorScraper' object has no attribute 'scroll_into_view'
+2025-03-20 08:03:27,474 - ERROR - ⚠️ Error interacting with job 6: 'GlassdoorScraper' object has no attribute 'scroll_into_view'
+2025-03-20 08:03:27,475 - ERROR - ⚠️ Error interacting with job 7: 'GlassdoorScraper' object has no attribute 'scroll_into_view'
+2025-03-20 08:03:27,476 - ERROR - ⚠️ Error interacting with job 8: 'GlassdoorScraper' object has no attribute 'scroll_into_view'
+2025-03-20 08:03:27,477 - ERROR - ⚠️ Error interacting with job 9: 'GlassdoorScraper' object has no attribute 'scroll_into_view'
+2025-03-20 08:03:27,477 - ERROR - ⚠️ Error interacting with job 10: 'GlassdoorScraper' object has no attribute 'scroll_into_view'
+2025-03-20 08:03:27,478 - ERROR - ⚠️ Error interacting with job 11: 'GlassdoorScraper' object has no attribute 'scroll_into_view'
+2025-03-20 08:03:27,479 - ERROR - ⚠️ Error interacting with job 12: 'GlassdoorScraper' object has no attribute 'scroll_into_view'
+2025-03-20 08:03:27,480 - ERROR - ⚠️ Error interacting with job 13: 'GlassdoorScraper' object has no attribute 'scroll_into_view'
+2025-03-20 08:03:27,481 - ERROR - ⚠️ Error interacting with job 14: 'GlassdoorScraper' object has no attribute 'scroll_into_view'
+2025-03-20 08:03:27,482 - ERROR - ⚠️ Error interacting with job 15: 'GlassdoorScraper' object has no attribute 'scroll_into_view'
+2025-03-20 08:03:27,482 - ERROR - ⚠️ Error interacting with job 16: 'GlassdoorScraper' object has no attribute 'scroll_into_view'
+2025-03-20 08:03:27,483 - ERROR - ⚠️ Error interacting with job 17: 'GlassdoorScraper' object has no attribute 'scroll_into_view'
+2025-03-20 08:03:27,484 - ERROR - ⚠️ Error interacting with job 18: 'GlassdoorScraper' object has no attribute 'scroll_into_view'
+2025-03-20 08:03:27,485 - ERROR - ⚠️ Error interacting with job 19: 'GlassdoorScraper' object has no attribute 'scroll_into_view'
+2025-03-20 08:03:27,485 - ERROR - ⚠️ Error interacting with job 20: 'GlassdoorScraper' object has no attribute 'scroll_into_view'
+2025-03-20 08:03:27,486 - ERROR - ⚠️ Error interacting with job 21: 'GlassdoorScraper' object has no attribute 'scroll_into_view'
+2025-03-20 08:03:27,487 - ERROR - ⚠️ Error interacting with job 22: 'GlassdoorScraper' object has no attribute 'scroll_into_view'
+2025-03-20 08:03:27,487 - ERROR - ⚠️ Error interacting with job 23: 'GlassdoorScraper' object has no attribute 'scroll_into_view'
+2025-03-20 08:03:27,488 - ERROR - ⚠️ Error interacting with job 24: 'GlassdoorScraper' object has no attribute 'scroll_into_view'
+2025-03-20 08:03:27,489 - ERROR - ⚠️ Error interacting with job 25: 'GlassdoorScraper' object has no attribute 'scroll_into_view'
+2025-03-20 08:03:27,490 - ERROR - ⚠️ Error interacting with job 26: 'GlassdoorScraper' object has no attribute 'scroll_into_view'
+2025-03-20 08:03:27,490 - ERROR - ⚠️ Error interacting with job 27: 'GlassdoorScraper' object has no attribute 'scroll_into_view'
+2025-03-20 08:03:27,491 - ERROR - ⚠️ Error interacting with job 28: 'GlassdoorScraper' object has no attribute 'scroll_into_view'
+2025-03-20 08:03:27,492 - ERROR - ⚠️ Error interacting with job 29: 'GlassdoorScraper' object has no attribute 'scroll_into_view'
+2025-03-20 08:03:27,492 - ERROR - ⚠️ Error interacting with job 30: 'GlassdoorScraper' object has no attribute 'scroll_into_view'
+2025-03-20 08:03:27,495 - INFO - ✅ Scraped 0 jobs and saved to 'glassdoor_jobs.json'.
+2025-03-20 08:03:36,414 - INFO - ====== WebDriver manager ======
+2025-03-20 08:03:36,570 - INFO - Get LATEST chromedriver version for google-chrome
+2025-03-20 08:03:36,743 - INFO - Get LATEST chromedriver version for google-chrome
+2025-03-20 08:03:36,928 - INFO - Driver [/Users/kaifan/.wdm/drivers/chromedriver/mac64/134.0.6998.90/chromedriver-mac-arm64/chromedriver] found in cache
+2025-03-20 08:03:38,126 - INFO - ✅ WebDriver initialized successfully.
+2025-03-20 08:03:47,073 - INFO - ✅ Opened Glassdoor job page.
+2025-03-20 08:03:50,393 - INFO - ✅ Scrolled through job listings.
+2025-03-20 08:03:50,394 - INFO - 🔍 Scanning job listings...
+2025-03-20 08:03:50,410 - INFO - ✅ Found 30 jobs.
+2025-03-20 08:03:50,412 - ERROR - ⚠️ Error interacting with job 1: 'GlassdoorScraper' object has no attribute 'scroll_into_view'
+2025-03-20 08:03:50,413 - ERROR - ⚠️ Error interacting with job 2: 'GlassdoorScraper' object has no attribute 'scroll_into_view'
+2025-03-20 08:03:50,414 - ERROR - ⚠️ Error interacting with job 3: 'GlassdoorScraper' object has no attribute 'scroll_into_view'
+2025-03-20 08:03:50,414 - ERROR - ⚠️ Error interacting with job 4: 'GlassdoorScraper' object has no attribute 'scroll_into_view'
+2025-03-20 08:03:50,415 - ERROR - ⚠️ Error interacting with job 5: 'GlassdoorScraper' object has no attribute 'scroll_into_view'
+2025-03-20 08:03:50,416 - ERROR - ⚠️ Error interacting with job 6: 'GlassdoorScraper' object has no attribute 'scroll_into_view'
+2025-03-20 08:03:50,417 - ERROR - ⚠️ Error interacting with job 7: 'GlassdoorScraper' object has no attribute 'scroll_into_view'
+2025-03-20 08:03:50,418 - ERROR - ⚠️ Error interacting with job 8: 'GlassdoorScraper' object has no attribute 'scroll_into_view'
+2025-03-20 08:03:50,419 - ERROR - ⚠️ Error interacting with job 9: 'GlassdoorScraper' object has no attribute 'scroll_into_view'
+2025-03-20 08:03:50,420 - ERROR - ⚠️ Error interacting with job 10: 'GlassdoorScraper' object has no attribute 'scroll_into_view'
+2025-03-20 08:03:50,420 - ERROR - ⚠️ Error interacting with job 11: 'GlassdoorScraper' object has no attribute 'scroll_into_view'
+2025-03-20 08:03:50,421 - ERROR - ⚠️ Error interacting with job 12: 'GlassdoorScraper' object has no attribute 'scroll_into_view'
+2025-03-20 08:03:50,422 - ERROR - ⚠️ Error interacting with job 13: 'GlassdoorScraper' object has no attribute 'scroll_into_view'
+2025-03-20 08:03:50,423 - ERROR - ⚠️ Error interacting with job 14: 'GlassdoorScraper' object has no attribute 'scroll_into_view'
+2025-03-20 08:03:50,423 - ERROR - ⚠️ Error interacting with job 15: 'GlassdoorScraper' object has no attribute 'scroll_into_view'
+2025-03-20 08:03:50,424 - ERROR - ⚠️ Error interacting with job 16: 'GlassdoorScraper' object has no attribute 'scroll_into_view'
+2025-03-20 08:03:50,424 - ERROR - ⚠️ Error interacting with job 17: 'GlassdoorScraper' object has no attribute 'scroll_into_view'
+2025-03-20 08:03:50,425 - ERROR - ⚠️ Error interacting with job 18: 'GlassdoorScraper' object has no attribute 'scroll_into_view'
+2025-03-20 08:03:50,426 - ERROR - ⚠️ Error interacting with job 19: 'GlassdoorScraper' object has no attribute 'scroll_into_view'
+2025-03-20 08:03:50,427 - ERROR - ⚠️ Error interacting with job 20: 'GlassdoorScraper' object has no attribute 'scroll_into_view'
+2025-03-20 08:03:50,427 - ERROR - ⚠️ Error interacting with job 21: 'GlassdoorScraper' object has no attribute 'scroll_into_view'
+2025-03-20 08:03:50,429 - ERROR - ⚠️ Error interacting with job 22: 'GlassdoorScraper' object has no attribute 'scroll_into_view'
+2025-03-20 08:03:50,430 - ERROR - ⚠️ Error interacting with job 23: 'GlassdoorScraper' object has no attribute 'scroll_into_view'
+2025-03-20 08:03:50,431 - ERROR - ⚠️ Error interacting with job 24: 'GlassdoorScraper' object has no attribute 'scroll_into_view'
+2025-03-20 08:03:50,433 - ERROR - ⚠️ Error interacting with job 25: 'GlassdoorScraper' object has no attribute 'scroll_into_view'
+2025-03-20 08:03:50,434 - ERROR - ⚠️ Error interacting with job 26: 'GlassdoorScraper' object has no attribute 'scroll_into_view'
+2025-03-20 08:03:50,435 - ERROR - ⚠️ Error interacting with job 27: 'GlassdoorScraper' object has no attribute 'scroll_into_view'
+2025-03-20 08:03:50,436 - ERROR - ⚠️ Error interacting with job 28: 'GlassdoorScraper' object has no attribute 'scroll_into_view'
+2025-03-20 08:03:50,436 - ERROR - ⚠️ Error interacting with job 29: 'GlassdoorScraper' object has no attribute 'scroll_into_view'
+2025-03-20 08:03:50,437 - ERROR - ⚠️ Error interacting with job 30: 'GlassdoorScraper' object has no attribute 'scroll_into_view'
+2025-03-20 08:03:50,437 - INFO - ✅ Scraped 0 jobs and saved to 'glassdoor_jobs.json'.

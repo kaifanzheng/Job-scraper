@@ -86,7 +86,7 @@ class GlassdoorScraper:
 
     def capture_screenshot(self, job_index):
         """Capture a screenshot of the job details panel."""
-        screenshot_path = f"job_details_{job_index}.png"
+        screenshot_path = f"screen_shot/job_details_{job_index}.png"
         self.driver.save_screenshot(screenshot_path)
         time.sleep(2)
         return screenshot_path
@@ -125,8 +125,8 @@ class GlassdoorScraper:
 
                     # Convert image coordinates to screen coordinates
                     screen_width, screen_height = pyautogui.size()
-                    screen_x = int(x * (screen_width / width))
-                    screen_y = int(y * (screen_height / height)) + 10  # Move cursor **10 pixels down**
+                    screen_x = int(x * (screen_width / width))+30
+                    screen_y = int(y * (screen_height / height)) + 50  # Move cursor **10 pixels down**
 
                     print(f"✅ 'Show More' button detected at ({screen_x}, {screen_y}). Clicking...")
 
@@ -170,7 +170,7 @@ class GlassdoorScraper:
             if "Showless" in extracted_text:
                 print("✅ 'Showless' detected, all job details captured.")
                 break
-            if screenshot_counter >= 5:
+            if screenshot_counter >= 10:
                 print("🛑 Maximum screenshots reached. Stopping extraction.")
                 break
             # **Use mouse scroll wheel to scroll down inside job details tab**
