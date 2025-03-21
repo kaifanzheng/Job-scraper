@@ -143,6 +143,14 @@ class GlassdoorScraper:
         except Exception as e:
             print(f"⚠️ Error detecting 'Show More' button: {e}")
 
+    def close_popup(self):
+        """Close the 'Never Miss an Opportunity' pop-up if detected."""
+        print("🔍 Closing pop-up...")
+        pyautogui.moveTo(500, 1000, duration=random.uniform(0.5, 1.5))
+        pyautogui.click()
+        time.sleep(random.uniform(2, 4))
+        print("✅ Pop-up closed.")
+
     def extract_full_job_details(self, job_index):
         """Scroll down inside the job details tab using mouse wheel and capture text until 'Show Less' is detected."""
         full_text = []
@@ -170,9 +178,13 @@ class GlassdoorScraper:
             if "Showless" in extracted_text:
                 print("✅ 'Showless' detected, all job details captured.")
                 break
-            if screenshot_counter >= 10:
+            if screenshot_counter >= 5:
                 print("🛑 Maximum screenshots reached. Stopping extraction.")
                 break
+            if "Never Miss an Opportunity" in extracted_text:
+                print("🛑 pop up window showed up.")
+                self.close_popup()
+                continue
             # **Use mouse scroll wheel to scroll down inside job details tab**
             pyautogui.scroll(-5)  # Scroll down (negative value)
             time.sleep(random.uniform(2, 4))
