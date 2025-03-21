@@ -1,10 +1,12 @@
 import pyautogui
+import random
+# print("Move your mouse! Press 'Ctrl + C' to stop.")
 
-print("🔍 Click anywhere on the screen. Press 'Esc' to exit.")
+# try:
+#     while True:
+#         x, y = pyautogui.position()
+#         print(f"🖱 Current Mouse Position: X={x}, Y={y}", end="\r")
+# except KeyboardInterrupt:
+#     print("\n✅ Stopped tracking mouse position.")
 
-while True:
-
-    if pyautogui.mouseDown():  # Detects left mouse click
-        x, y = pyautogui.position()  # Get current mouse position
-        print(f"🖱 Mouse clicked at: X={x}, Y={y}")
-        pyautogui.sleep(0.5)  # Small delay to avoid duplicate prints
+pyautogui.moveTo(900, 260, duration=random.uniform(0.5, 1.5))

@@ -66,12 +66,6 @@ class GlassdoorScraper:
                 job.click()
                 time.sleep(random.uniform(3, 6))  # Allow details to load
 
-                # Take a screenshot after clicking
-                screenshot_path = self.capture_screenshot(index)
-
-                # Detect and click "Show More" button
-                self.detect_and_click_show_more(screenshot_path)
-
                 # Scroll & Capture Full Job Details using Mouse Scroll
                 job_text = self.extract_full_job_details(index)
 
@@ -84,14 +78,7 @@ class GlassdoorScraper:
             except Exception as e:
                 print(f"⚠️ Error interacting with job: {e}")
 
-    def capture_screenshot(self, job_index):
-        """Capture a screenshot of the job details panel."""
-        screenshot_path = f"screen_shot/job_details_{job_index}.png"
-        self.driver.save_screenshot(screenshot_path)
-        time.sleep(2)
-        return screenshot_path
-
-    def detect_and_click_show_more(self, screenshot_path):
+    def click_show_more(self, screenshot_path):
         """Detect and click 'Show More' button using OCR and PyAutoGUI."""
         try:
             # Load the image
@@ -146,7 +133,7 @@ class GlassdoorScraper:
     def close_popup(self):
         """Close the 'Never Miss an Opportunity' pop-up if detected."""
         print("🔍 Closing pop-up...")
-        pyautogui.moveTo(500, 1000, duration=random.uniform(0.5, 1.5))
+        pyautogui.moveTo(900, 280, duration=random.uniform(0.5, 1.5))
         pyautogui.click()
         time.sleep(random.uniform(2, 4))
         print("✅ Pop-up closed.")
@@ -155,7 +142,7 @@ class GlassdoorScraper:
         """Scroll down inside the job details tab using mouse wheel and capture text until 'Show Less' is detected."""
         full_text = []
         screenshot_counter = 1
-
+        showmore_button_counter = 0
         while True:
             # Capture the current job panel
             screenshot_path = f"screen_shot/job_details_{job_index}_{screenshot_counter}.png"
@@ -171,22 +158,29 @@ class GlassdoorScraper:
 
             print(f"📸 Captured and processed screenshot {screenshot_counter} for job {job_index + 1}")
             print(f"🔍 Extracted Text: {extracted_text}")
+
             # Check if "Show Less" button is visible (stop scrolling)
-            if "Show Less" in extracted_text:
-                print("✅ 'Show Less' detected, all job details captured.")
-                break
             if "Showless" in extracted_text:
                 print("✅ 'Showless' detected, all job details captured.")
                 break
             if screenshot_counter >= 5:
                 print("🛑 Maximum screenshots reached. Stopping extraction.")
                 break
+            if showmore_button_counter >= 2:
+                print("🛑 repeatly detecting Showmore button")
+                break
+            if "Showmore" in extracted_text:
+                print("✅ 'Showmore' detected in the screen shot.it detected: ",showmore_button_counter)
+                self.click_show_more(screenshot_path=screenshot_path)
+                showmore_button_counter = showmore_button_counter + 1
+                continue
             if "Never Miss an Opportunity" in extracted_text:
                 print("🛑 pop up window showed up.")
                 self.close_popup()
                 continue
+
             # **Use mouse scroll wheel to scroll down inside job details tab**
-            pyautogui.scroll(-5)  # Scroll down (negative value)
+            pyautogui.scroll(-7)  # Scroll down (negative value)
             time.sleep(random.uniform(2, 4))
 
             screenshot_counter += 1
