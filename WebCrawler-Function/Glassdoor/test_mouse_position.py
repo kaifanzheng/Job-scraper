@@ -9,4 +9,4 @@ import random
 # except KeyboardInterrupt:
 #     print("\n✅ Stopped tracking mouse position.")
 
-pyautogui.moveTo(900, 260, duration=random.uniform(0.5, 1.5))
+pyautogui.moveTo(200, 500, duration=random.uniform(0.5, 1.5))
