@@ -5,14 +5,13 @@ import pytesseract
 import pyautogui
 import cv2
 import numpy as np
+import io
 from PIL import Image
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 
 pytesseract.pytesseract.tesseract_cmd = "tesseract"
 
@@ -42,22 +41,18 @@ class GlassdoorScraper:
             if new_height == last_height:
                 break
             last_height = new_height
-            
-    def click_show_more_jobs(self, screenshot_path, debug=False):
+
+    def click_show_more_jobs(self, screenshot_bytes, debug=False):
         """Use OCR to detect and click the 'Show more jobs' button."""
         try:
-            image = cv2.imread(screenshot_path)
-            if image is None:
-                print("⚠️ Error: Unable to load the screenshot.")
-                return
+            image = Image.open(io.BytesIO(screenshot_bytes))
+            image_np = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
+            del image
 
-            height, width, _ = image.shape
-            gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-
-            # OCR with detailed output
+            height, width, _ = image_np.shape
+            gray = cv2.cvtColor(image_np, cv2.COLOR_BGR2GRAY)
             extracted = pytesseract.image_to_data(gray, output_type=pytesseract.Output.DICT)
 
-            # Combine nearby words into phrases
             boxes = []
             current_text = ""
             current_coords = []
@@ -65,15 +60,12 @@ class GlassdoorScraper:
             for i in range(len(extracted["text"])):
                 text = extracted["text"][i].strip().lower()
                 conf = int(extracted["conf"][i])
-
                 if conf < 60 or not text:
                     if current_text:
                         boxes.append((current_text.strip(), current_coords))
                         current_text = ""
                         current_coords = []
                     continue
-
-                # Add current token
                 current_text += " " + text
                 current_coords.append((
                     extracted["left"][i],
@@ -81,8 +73,6 @@ class GlassdoorScraper:
                     extracted["width"][i],
                     extracted["height"][i]
                 ))
-
-                # If next word is far or last word, finalize group
                 if (i + 1 >= len(extracted["text"])) or extracted["text"][i + 1].strip() == "":
                     boxes.append((current_text.strip(), current_coords))
                     current_text = ""
@@ -91,90 +81,85 @@ class GlassdoorScraper:
             for text, coords in boxes:
                 if "show more jobs" in text:
                     print(f"✅ Detected text: '{text}'")
-                    # Average coordinates for center
                     avg_x = sum([x + w // 2 for x, y, w, h in coords]) // len(coords)
                     avg_y = sum([y + h // 2 for x, y, w, h in coords]) // len(coords)
-
                     screen_width, screen_height = pyautogui.size()
                     screen_x = int(avg_x * screen_width / width)
                     screen_y = int(avg_y * screen_height / height)
-
                     print(f"🖱 Clicking at ({screen_x}, {screen_y})")
-                    pyautogui.moveTo(screen_x, screen_y+45, duration=random.uniform(0.4, 1.2))
+                    pyautogui.moveTo(screen_x, screen_y + 45, duration=random.uniform(0.4, 1.2))
                     pyautogui.click()
                     time.sleep(random.uniform(1.2, 2))
-
-                    if debug:
-                        for x, y, w, h in coords:
-                            cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 2)
-                        cv2.imwrite("debug_show_more_jobs_click.png", image)
-                        print("🖼 Debug image saved: debug_show_more_jobs_click.png")
                     return
-
             print("⚠️ 'Show more jobs' button not detected.")
-
         except Exception as e:
             print(f"⚠️ Error detecting 'Show more jobs' button: {e}")
 
-
-    def load_more_jobs(self,max_click=3):
+    def load_more_jobs(self, max_click=4):
         click_counter = 0
-        print("✅ starting to find click more jobs button!")
+        print("✅ Starting to find 'Show more jobs' button...")
+
         while True:
             if click_counter >= max_click:
                 self.close_popup()
                 break
+
             pyautogui.moveTo(200, 400, duration=random.uniform(0.5, 1.5))
             time.sleep(random.uniform(0.5, 1.5))
-            screenshot_path = f"screen_shot/find_show_more_jobs_{click_counter}.png"
-            self.driver.save_screenshot(screenshot_path)
-            time.sleep(1.2)
-            image = Image.open(screenshot_path)
+
+            screenshot_bytes = self.driver.get_screenshot_as_png()
+            image = Image.open(io.BytesIO(screenshot_bytes))
             extracted_text = pytesseract.image_to_string(image).strip()
+            del image
+
             if "Show more jobs" in extracted_text:
-                    self.click_show_more_jobs(screenshot_path)
-                    #click if show more jobs button still there
-                    screenshot_path = f"screen_shot/find_show_more_jobs_{click_counter}.png"
-                    self.driver.save_screenshot(screenshot_path)
-                    time.sleep(1.2)
-                    image = Image.open(screenshot_path)
-                    if "Show more jobs" in extracted_text:
-                        continue
-            if "Never Miss an Opportunity" in extracted_text:
-                    self.close_popup()
-                    continue
+                print("🟩 'Show more jobs' detected. Attempting click...")
+                self.click_show_more_jobs(screenshot_bytes)
+                time.sleep(1.2)
+
+                original_x, original_y = pyautogui.position()
+
+                screenshot_bytes = self.driver.get_screenshot_as_png()
+                image = Image.open(io.BytesIO(screenshot_bytes))
+                recheck_text = pytesseract.image_to_string(image).strip()
+                del image
+
+                if "Show more jobs" in recheck_text:
+                    for offset_y in [-5, 5, -10, 10, -15, 15]:
+                        pyautogui.moveTo(original_x, original_y + offset_y, duration=0.3)
+                        pyautogui.click()
+                        time.sleep(1.2)
+
+                    screenshot_bytes = self.driver.get_screenshot_as_png()
+                    image = Image.open(io.BytesIO(screenshot_bytes))
+                    final_check_text = pytesseract.image_to_string(image).strip()
+                    del image
+
+                    if "Show more jobs" in final_check_text:
+                        print("⛔ Still visible after retries. Breaking.")
+                        break
+            elif "Never Miss an Opportunity" in extracted_text:
+                self.close_popup()
+                continue
+
             pyautogui.scroll(-165)
             time.sleep(random.uniform(0.5, 1.5))
-            click_counter = click_counter + 1
-        return
-        
-        
+            click_counter += 1
 
     def find_and_click_jobs(self):
-        """Visually identify and click each job listing like a human."""
         print("🔍 Scanning job listings...")
-
         job_list = self.driver.find_elements(By.CSS_SELECTOR, "li[data-test='jobListing']")
         print(f"✅ Found {len(job_list)} jobs.")
 
         for index, job in enumerate(job_list):
             try:
                 self.scroll_into_view(job)
-                time.sleep(random.uniform(2, 4))  # Mimic human delay
-                
-                # Click job listing to open details
+                time.sleep(random.uniform(2, 4))
                 job.click()
-                time.sleep(random.uniform(3, 6))  # Allow details to load
-
-                # Scroll & Capture Full Job Details using Mouse Scroll
+                time.sleep(random.uniform(3, 6))
                 job_text = self.extract_full_job_details(index)
-
-                print(f"\n📌 Job {index + 1} Details:\n{job_text}\n")
-
-                self.jobs_data.append({
-                    "job_details": job_text
-                })
-
+                print(f"\n📌 Job {index + 1} Details:\n{job_text[:200]}...\n")
+                self.jobs_data.append({"job_details": job_text})
             except Exception as e:
                 print(f"⚠️ Error interacting with job: {e}")
 
@@ -184,25 +169,19 @@ class GlassdoorScraper:
         showmore_button_counter = 0
 
         while True:
-            screenshot_path = f"screen_shot/job_details_{job_index}_{screenshot_counter}.png"
-            self.driver.save_screenshot(screenshot_path)
-            time.sleep(1.2)
-            image = Image.open(screenshot_path)
+            screenshot_bytes = self.driver.get_screenshot_as_png()
+            image = Image.open(io.BytesIO(screenshot_bytes))
             extracted_text = pytesseract.image_to_string(image).strip()
+            del image
 
             if extracted_text:
                 full_text.append(extracted_text)
+                print(f"📸 Screenshot {screenshot_counter} - Extracted: {extracted_text[:60]}")
 
-            print(f"📸 Screenshot {screenshot_counter} - Extracted: {extracted_text[:60]}")
-
-            if "Showless" in extracted_text:
+            if "Showless" in extracted_text or screenshot_counter >= 5 or showmore_button_counter >= 2:
                 break
-            if screenshot_counter >= 5:
-                break
-            if showmore_button_counter >= 2:
-                break
-            if ("Showmore" in extracted_text) or ("Show" in extracted_text) or ("More" in extracted_text):
-                self.click_show_more(screenshot_path)
+            if "Showmore" in extracted_text or "Show" in extracted_text or "More" in extracted_text:
+                self.click_show_more(screenshot_bytes)
                 showmore_button_counter += 1
                 continue
             if "Never Miss an Opportunity" in extracted_text:
@@ -215,24 +194,23 @@ class GlassdoorScraper:
 
         return "\n".join(full_text)
 
-    def click_show_more(self, screenshot_path):
+    def click_show_more(self, screenshot_bytes):
         try:
-            image = cv2.imread(screenshot_path)
-            if image is None:
-                print("⚠️ Error: Unable to load the screenshot.")
-                return
+            image = Image.open(io.BytesIO(screenshot_bytes))
+            image_np = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
+            del image
 
-            height, width, _ = image.shape
-            gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)  # Use full image here
-            extracted_text = pytesseract.image_to_data(gray, output_type=pytesseract.Output.DICT)
-            print(extracted_text)
-            for i, text in enumerate(extracted_text["text"]):
+            height, width, _ = image_np.shape
+            gray = cv2.cvtColor(image_np, cv2.COLOR_BGR2GRAY)
+            extracted = pytesseract.image_to_data(gray, output_type=pytesseract.Output.DICT)
+
+            for i, text in enumerate(extracted["text"]):
                 if "Show" in text:
                     x, y, w, h = (
-                        extracted_text["left"][i],
-                        extracted_text["top"][i],
-                        extracted_text["width"][i],
-                        extracted_text["height"][i],
+                        extracted["left"][i],
+                        extracted["top"][i],
+                        extracted["width"][i],
+                        extracted["height"][i],
                     )
                     screen_width, screen_height = pyautogui.size()
                     screen_x = int(x * (screen_width / width)) + 30
