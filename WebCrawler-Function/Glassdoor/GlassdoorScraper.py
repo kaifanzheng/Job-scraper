@@ -123,9 +123,12 @@ class GlassdoorScraper:
                 image = Image.open(io.BytesIO(screenshot_bytes))
                 recheck_text = pytesseract.image_to_string(image).strip()
                 del image
+                if "Never Miss an Opportunity" in extracted_text:
+                    self.close_popup()
+                    continue
 
                 if "Show more jobs" in recheck_text:
-                    for offset_y in [-5, 5, -10, 10, -15, 15]:
+                    for offset_y in [-5, 5, -10, 10, -15, 15,-20,20]:
                         pyautogui.moveTo(original_x, original_y + offset_y, duration=0.3)
                         pyautogui.click()
                         time.sleep(1.2)
@@ -138,9 +141,6 @@ class GlassdoorScraper:
                     if "Show more jobs" in final_check_text:
                         print("⛔ Still visible after retries. Breaking.")
                         break
-            elif "Never Miss an Opportunity" in extracted_text:
-                self.close_popup()
-                continue
 
             pyautogui.scroll(-165)
             time.sleep(random.uniform(0.5, 1.5))
