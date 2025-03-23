@@ -95,11 +95,12 @@ class GlassdoorScraper:
         except Exception as e:
             print(f"⚠️ Error detecting 'Show more jobs' button: {e}")
 
-    def load_more_jobs(self, max_click=4):
+    def load_more_jobs(self, max_click=5):
         click_counter = 0
         print("✅ Starting to find 'Show more jobs' button...")
 
         while True:
+            print("---------click counter: ",click_counter)
             if click_counter >= max_click:
                 self.close_popup()
                 break
@@ -111,7 +112,9 @@ class GlassdoorScraper:
             image = Image.open(io.BytesIO(screenshot_bytes))
             extracted_text = pytesseract.image_to_string(image).strip()
             del image
-
+            if "Never Miss an Opportunity" in extracted_text:
+                self.close_popup()
+                continue
             if "Show more jobs" in extracted_text:
                 print("🟩 'Show more jobs' detected. Attempting click...")
                 self.click_show_more_jobs(screenshot_bytes)
@@ -123,7 +126,7 @@ class GlassdoorScraper:
                 image = Image.open(io.BytesIO(screenshot_bytes))
                 recheck_text = pytesseract.image_to_string(image).strip()
                 del image
-                if "Never Miss an Opportunity" in extracted_text:
+                if "Never Miss an Opportunity" in recheck_text:
                     self.close_popup()
                     continue
 
@@ -188,39 +191,50 @@ class GlassdoorScraper:
                 self.close_popup()
                 continue
 
-            pyautogui.scroll(-7)
+            pyautogui.scroll(-10)
             time.sleep(random.uniform(1.2, 2))
             screenshot_counter += 1
 
         return "\n".join(full_text)
 
     def click_show_more(self, screenshot_bytes):
+        offset_x = 30
+        offset_y = 50
         try:
+            # Load and convert screenshot to OpenCV format
             image = Image.open(io.BytesIO(screenshot_bytes))
             image_np = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
             del image
 
             height, width, _ = image_np.shape
-            gray = cv2.cvtColor(image_np, cv2.COLOR_BGR2GRAY)
+
+            # Focus only on bottom half
+            bottom_half = image_np[height // 2:, :]
+            gray = cv2.cvtColor(bottom_half, cv2.COLOR_BGR2GRAY)
+
+            # OCR
             extracted = pytesseract.image_to_data(gray, output_type=pytesseract.Output.DICT)
 
             for i, text in enumerate(extracted["text"]):
-                if "Show" in text:
-                    x, y, w, h = (
-                        extracted["left"][i],
-                        extracted["top"][i],
-                        extracted["width"][i],
-                        extracted["height"][i],
-                    )
+                text = text.strip().lower()
+                if "show" in text or "more" in text:
+                    x = extracted["left"][i]
+                    y = extracted["top"][i] + height // 2  # Adjust y for full image
+                    w = extracted["width"][i]
+                    h = extracted["height"][i]
+
                     screen_width, screen_height = pyautogui.size()
-                    screen_x = int(x * (screen_width / width)) + 30
-                    screen_y = int(y * (screen_height / height)) + 50
+                    screen_x = int((x + w // 2) * screen_width / width) + offset_x
+                    screen_y = int((y + h // 2) * screen_height / height) + offset_y
+
                     print(f"✅ 'Show More' button detected at ({screen_x}, {screen_y}). Clicking...")
-                    pyautogui.moveTo(screen_x, screen_y, duration=random.uniform(0.5, 1.5))
+                    pyautogui.moveTo(screen_x, screen_y, duration=random.uniform(0.4, 1.2))
                     pyautogui.click()
                     time.sleep(random.uniform(1.2, 2))
                     return
+
             print("⚠️ 'Show More' button not detected.")
+
         except Exception as e:
             print(f"⚠️ Error detecting 'Show More' button: {e}")
 
