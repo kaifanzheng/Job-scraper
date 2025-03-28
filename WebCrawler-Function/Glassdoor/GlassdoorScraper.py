@@ -2,6 +2,7 @@ import time
 import json
 import random
 import pytesseract
+pytesseract.pytesseract.tesseract_cmd = "/opt/homebrew/bin/tesseract"
 import pyautogui
 import cv2
 import numpy as np
